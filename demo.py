@@ -93,7 +93,64 @@ get_tok = re.compile(tok_regex).match #Regex match function
 match_object = get_tok(line)
 '''
 
-#---  ---
+#--- Decorators ---
+
+# Like the `compose` function above, sometimes we want to modify the
+# functionality of one function in some generic way *without* changing
+# the function itself. Python provides a feature to generalize
+# function composition, called function decorators.
+
+def to_paragraph(string):
+        '''
+        Returns the given string, wrapped in HTML paragraph tags.
+        '''
+        return '<p>' + string + '</p>'
+
+# The above function will allow us to turn any string into an HTML
+# paragraph (without proper HTML escaping, but that's a whole
+# different topic).
+
+def a_cool_string(string):
+        'Makes strings really cool.'
+        return string + '. Whoaaaaa cool.'
+
+# Now, what if we want to wrap the `string` argument of
+# `a_cool_string` in paragraph tags? We could either call
+# `to_paragraph` inside the function, OR we could use a decorator.
+
+def to_paragraph_decorator(function):
+        '''
+        Decorators are just regular functions. They are given a
+        function as an argument (so they're higher-order functions),
+        and they return one as a result.
+
+        The power of decorators is that when we apply them, as we'll
+        see later, they take the function they're applied to as an
+        argument, and get a chance to replace it with something
+        else. Usually that something else is a new function which
+        wraps the old one.
+
+        This all gets done when the function is being defined, so the
+        code in this function will be run once.
+        '''
+        print('wrapping function...')
+        def wrapper(*args):
+                print("I'm the wrapper function!")
+                return function(to_paragraph(args[0]))
+        print('done wrapping...')
+        return wrapper
+
+# We apply decorators to functions by using the @-syntax.
+
+@to_paragraph_decorator
+def decorated_cool_string(string):
+        return string + '. Whoaaaaa cool.'
+
+# Decorators are used in a variety of different ways. For example,
+# some Python web frameworks use decorators in order to route URLs to
+# the appropriate handler function. You can also easily implement
+# caching/memoization with a decorator, or enforce type-correctness of
+# function arguments and results.
 
 def main():
 	if DEBUG:
@@ -106,6 +163,8 @@ def main():
 
 	plus_one_of_square = compose(plus_one, square)
 	print(plus_one_of_square(1))
+
+	print(decorated_cool_string('Look at this string.'))
 
 ''' 
 __name__ is a special variable which is set by the python interpreter. 
