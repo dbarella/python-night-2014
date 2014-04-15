@@ -102,6 +102,7 @@ tok_spec = [
 		]
 
 tok_regex = '|'.join('(?P<{0}>{1})'.format(*pair) for pair in tok_spec) #Named regex pairs for each item in tok_spec
+get_tok = re.compile(tok_regex).match #Regex match function
 
 #!!! The special sauce !!!
 get_tok = re.compile(tok_regex).match #match is a function in the regex library that takes a string
@@ -117,7 +118,97 @@ match_object = get_tok(line)
 Probably one of the most powerful python shorthands
 '''
 
-#--- First-class functions ---
+
+#--- Decorators ---
+
+# Like the `compose` function above, sometimes we want to modify the
+# functionality of one function in some generic way *without* changing
+# the function itself. Python provides a feature to generalize
+# function composition, called function decorators.
+
+def to_paragraph(string):
+        '''
+        Returns the given string, wrapped in HTML paragraph tags.
+        '''
+        return '<p>' + string + '</p>'
+
+# The above function will allow us to turn any string into an HTML
+# paragraph (without proper HTML escaping, but that's a whole
+# different topic).
+
+def a_cool_string(string):
+        'Makes strings really cool.'
+        return string + '. Whoaaaaa cool.'
+
+# Now, what if we want to wrap the `string` argument of
+# `a_cool_string` in paragraph tags? We could either call
+# `to_paragraph` inside the function, OR we could use a decorator.
+
+def to_paragraph_decorator(function):
+        '''
+        Decorators are just regular functions. They are given a
+        function as an argument (so they're higher-order functions),
+        and they return one as a result.
+
+        The power of decorators is that when we apply them, as we'll
+        see later, they take the function they're applied to as an
+        argument, and get a chance to replace it with something
+        else. Usually that something else is a new function which
+        wraps the old one.
+
+        This all gets done when the function is being defined, so the
+        code in this function will be run once.
+        '''
+        print('wrapping function...')
+        def wrapper(*args):
+                print("I'm the wrapper function!")
+                return function(to_paragraph(args[0]))
+        print('done wrapping...')
+        return wrapper
+
+# We apply decorators to functions by using the @-syntax.
+
+@to_paragraph_decorator
+def decorated_cool_string(string):
+        return string + '. Whoaaaaa cool.'
+
+# Decorators are used in a variety of different ways. For example,
+# some Python web frameworks use decorators in order to route URLs to
+# the appropriate handler function. You can also easily implement
+# caching/memoization with a decorator, or enforce type-correctness of
+# function arguments and results.
+
+#--- With statements ---
+
+# There are many operations in programming which involve getting some
+# resource, doing something with it, and then disposing of the
+# resource. For example, you need to open a file to read from it, and
+# you should generally close the file as soon as you're done with
+# it. But this leads to repetitive code (open, do something, close,
+# open, do something, close, etc.). Furthermore, what if you forget
+# to close the file?
+
+# With statements abstract away the opening and closing, allowing us
+# to write cleaner code and be sure we'll always dispose of the
+# resource correctly (even in the face of exceptions).
+
+def using_with_statement(filename):
+        '''
+        A with statement consists of the syntax:
+
+        with <some resource> as <variable name>:
+            <do stuff here>
+        '''
+        contents = None
+        with open(filename) as f:
+                contents = f.read()
+        return contents
+
+# The given file will always be closed once the with statement
+# completes. Cool!
+
+# With statements are used in a variety of contexts, like ensuring
+# that locks (a concurrency primitive) as used correctly.
 
 
 #--- Class writing stuff. How to make your classes cooler ---
@@ -225,6 +316,12 @@ def main():
 	plus_one_of_square = compose(plus_one, square)
 	print(plus_one_of_square(1))
 
+	print(decorated_cool_string('Look at this string.'))
+
+	print(using_with_statement('file.txt'))
+
+
+	#Class stuff
 	l = ListWrapper(1, 2, 3)
 	
 	#for loops use the __iter__ method to iterate over the contained objects
@@ -237,6 +334,9 @@ def main():
 	print(d['a']) # 5
 	print(d['b']) # DEFAULT
 
+
+
+#--- Misc. Cool Stuff.
 '''
 This is a good way of defining main() methods and having them only run when you do:
 	python program.py
