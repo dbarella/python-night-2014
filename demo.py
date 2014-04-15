@@ -7,7 +7,11 @@ and to remind you of the cool stuff that we taught!
 
 Function-writing stuff
 - First-class functions
+- Decorators
+- With statements
 - Comprehensions
+
+TODO:
 - Named arguments, splats, *args, **kwargs
 
 Class-writing stuff
@@ -113,12 +117,6 @@ match_object = get_tok(line)
 #This way you don't need to re-compile the regex each time you use it, which takes more memory and slows things down
 '''
 
-#--- Comprehensions ---
-'''
-Probably one of the most powerful python shorthands
-'''
-
-
 #--- Decorators ---
 
 # Like the `compose` function above, sometimes we want to modify the
@@ -210,6 +208,48 @@ def using_with_statement(filename):
 # With statements are used in a variety of contexts, like ensuring
 # that locks (a concurrency primitive) as used correctly.
 
+
+#--- Comprehensions ---
+'''
+Probably one of the most powerful python shorthands
+'''
+def dup_n_times_old(item, n):
+	'''
+	Say we want to return a list of n 'item's. 
+	The typical way to do that would be:'''
+	temp = []
+	for i in range(n):
+		temp.append(item)
+
+	return temp
+
+def dup_n_times_comp(item, n):
+	'''
+	There is a shorthand to do exactly the same thing, called a list comprehension.
+	These are a way to construct lists by specifying what you want in them
+	'''
+
+	# List Comps become lists - Note the [] braces:
+	# [<object> for thing in <iterable>] -> [<object>, <object>, ..., <object>]
+	[0 for i in range(5)] # -> [0, 0, 0, 0, 0]
+
+	# [thing for thing in <iterable>] -> [thing0, thing1, ..., thing_N_minus_1]
+	[i for i in range(5)] # -> [0, 1, 2, 3, 4]
+
+	# You can also do awesome filtering using if/else conditions
+	# [thing for thing in <iterable> if condition(thing)] -> [thing0, thing1, ..., thing_N_minus_1]
+	# [function(thing) for thing in <iterable>] -> [function(thing0), function(thing1), ..., function(thing_N_minus_1)]
+	[i for i in range(10) if i%2 == 1] #Becomes a list of odd numbers from 0 to 10
+	[i**2 for i in range(10)] #Becomes a list of squares
+	[i**2 for i in range(10) if i%2 == 1] #Becomes a list of squares of odd numbers
+
+	#if-else
+	[i if i%2 == 0 else i+100 for i in range(5)]
+
+	return [item for i in range(n)]
+
+#--- Named args, splats, *args, **kwargs ---	
+#TODO
 
 #--- Class writing stuff. How to make your classes cooler ---
 #--- Magic Methods ---
@@ -320,6 +360,7 @@ def main():
 
 	print(using_with_statement('file.txt'))
 
+	print(dup_n_times_comp('cat', 5))
 
 	#Class stuff
 	l = ListWrapper(1, 2, 3)
