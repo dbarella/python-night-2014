@@ -152,6 +152,38 @@ def decorated_cool_string(string):
 # caching/memoization with a decorator, or enforce type-correctness of
 # function arguments and results.
 
+#--- With statements ---
+
+# There are many operations in programming which involve getting some
+# resource, doing something with it, and then disposing of the
+# resource. For example, you need to open a file to read from it, and
+# you should generally close the file as soon as you're done with
+# it. But this leads to repetitive code (open, do something, close,
+# open, do something, close, etc.). Furthermore, what if you forget
+# to close the file?
+
+# With statements abstract away the opening and closing, allowing us
+# to write cleaner code and be sure we'll always dispose of the
+# resource correctly (even in the face of exceptions).
+
+def using_with_statement(filename):
+        '''
+        A with statement consists of the syntax:
+
+        with <some resource> as <variable name>:
+            <do stuff here>
+        '''
+        contents = None
+        with open(filename) as f:
+                contents = f.read()
+        return contents
+
+# The given file will always be closed once the with statement
+# completes. Cool!
+
+# With statements are used in a variety of contexts, like ensuring
+# that locks (a concurrency primitive) as used correctly.
+
 def main():
 	if DEBUG:
 		print("Debugged")
@@ -165,6 +197,8 @@ def main():
 	print(plus_one_of_square(1))
 
 	print(decorated_cool_string('Look at this string.'))
+
+	print(using_with_statement('file.txt'))
 
 ''' 
 __name__ is a special variable which is set by the python interpreter. 
