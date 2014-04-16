@@ -159,8 +159,11 @@ def to_paragraph_decorator(function):
         '''
         print('wrapping function...')
         def wrapper(*args):
+        		# assert(isinstance(args[0], str))
                 print("I'm the wrapper function!")
-                return function(to_paragraph(args[0]))
+                result = function(to_paragraph(args[0]))
+                # assert(isinstance(result, str))
+                return result
         print('done wrapping...')
         return wrapper
 
@@ -169,6 +172,8 @@ def to_paragraph_decorator(function):
 @to_paragraph_decorator
 def decorated_cool_string(string):
         return string + '. Whoaaaaa cool.'
+
+# decorated_cool_string = to_paragraph_decorator(decorated_cool_string)
 
 # Decorators are used in a variety of different ways. For example,
 # some Python web frameworks use decorators in order to route URLs to
@@ -213,10 +218,16 @@ def using_with_statement(filename):
 '''
 Probably one of the most powerful python shorthands
 '''
-def dup_n_times_old(item, n):
+def dup_n_times_old(item, n, prompt0=None, prompt1=None, *args, **kwargs):
 	'''
 	Say we want to return a list of n 'item's. 
 	The typical way to do that would be:'''
+	
+	print('args: {0}\nkwargs: {1}'.format(args, kwargs))
+
+	if prompt0:
+		print(prompt0, prompt1)
+
 	temp = []
 	for i in range(n):
 		temp.append(item)
@@ -245,6 +256,10 @@ def dup_n_times_comp(item, n):
 
 	#if-else
 	[i if i%2 == 0 else i+100 for i in range(5)]
+
+	#DICTIONARY COMPS
+	#{key: val for key in <iterable0> for val in <iterable1>}
+	{}
 
 	return [item for i in range(n)]
 
